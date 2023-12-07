@@ -1,0 +1,11 @@
+{
+  "name": "mfe-react",
+  "private": true,
+  "scripts": {
+    "build:dev": "NODE_ENV=development webpack --config ./webpack/webpack.config.cjs",
+    "coverage": "vitest run --coverage",
+    "dev": "NODE_ENV=development webpack serve --config ./webpack/webpack.config.cjs",
+    "lint": "eslint --ignore-pattern webpack* --ignore-path .gitignore .",
+    "test": "vitest"
+  }
+}
