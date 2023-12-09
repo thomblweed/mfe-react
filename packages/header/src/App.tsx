@@ -1,9 +1,7 @@
 import React from "react";
 
-const App = (): JSX.Element => (
-  <div>
-    <h1>header app</h1>
-  </div>
-);
+import Header from "./Header";
+
+const App = (): JSX.Element => <Header />;
 
 export { App };

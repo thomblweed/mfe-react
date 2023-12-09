@@ -1,69 +1,41 @@
 const path = require("path");
-const { EsbuildPlugin } = require("esbuild-loader");
+const { merge } = require("webpack-merge");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { ModuleFederationPlugin } = require("webpack").container;
+const deps = require("../package.json").dependencies;
 
-const mode = process.env.NODE_ENV || "development";
+const baseConfig = require("../../../webpack.base.cjs");
 
-module.exports = {
-  mode,
+module.exports = merge(baseConfig, {
   entry: {
-    index: path.resolve(__dirname, "../src/index.tsx"),
+    index: path.resolve(__dirname, "../src/index.ts"),
   },
-  output: {
-    path: path.resolve(__dirname, "../public"),
-    filename: "[name].[contenthash].js",
-    assetModuleFilename: "[name][ext]",
-    clean: true,
-    publicPath: "/",
-  },
-  devtool: "inline-source-map",
   devServer: {
-    historyApiFallback: true,
     port: 3001,
-    open: true,
-    hot: true,
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        loader: "esbuild-loader",
-        options: {
-          loader: "tsx",
-          target: "es2015",
-        },
-      },
-      {
-        test: /\.s(a|c)ss$/,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
-        test: /\.(png|jpe?g|gif|woff)$/,
-        type: "asset/resource",
-      },
-    ],
-  },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js", ".jsx"],
   },
   plugins: [
     new HTMLWebpackPlugin({
       filename: "index.html",
-      title: "thom app",
+      title: "header app",
       inject: "body",
       template: path.resolve(__dirname, "./template/index.html"),
     }),
     new ModuleFederationPlugin({
       name: "header",
+      filename: "remoteEntry.js",
+      library: { type: "var", name: "header" },
+      exposes: {
+        "./Header": "./src/Header",
+      },
+      shared: {
+        ...deps,
+        react: { singleton: true, eager: true, requiredVersion: deps.react },
+        "react-dom": {
+          singleton: true,
+          eager: true,
+          requiredVersion: deps["react-dom"],
+        },
+      },
     }),
   ],
-  optimization: {
-    minimizer: [
-      new EsbuildPlugin({
-        target: "es2015",
-        css: true,
-      }),
-    ],
-  },
-};
+});

@@ -1,8 +1,10 @@
 import React from "react";
 
-const App = (): JSX.Element => (
+import Header from "header/Header";
+
+const App = () => (
   <div>
-    <h1>shell app</h1>
+    <Header />
   </div>
 );
 
